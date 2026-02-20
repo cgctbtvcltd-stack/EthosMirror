@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EthosMirror - Gương Soi Chiếu Cốt Cách</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+    <div class="overlay"></div>
+
+    <div id="authScreen" class="auth-container">
+        <div class="auth-box">
+            <h1 style="text-align:center; font-size:2rem; margin-bottom: 20px;">ETHOS<span style="color:var(--neon-blue)">MIRROR</span></h1>
+            
+            <div id="loginForm">
+                <input type="text" id="loginUser" placeholder="Tên định danh (ID)">
+                <input type="password" id="loginPass" placeholder="Mã bảo mật">
+                <button onclick="login()">KẾT NỐI BẢN THỂ</button>
+                <p class="switch-auth" onclick="showRegister()">Chưa có dữ liệu? Tạo bản thể mới</p>
+            </div>
+
+            <div id="registerForm" style="display: none;">
+                <input type="text" id="regUser" placeholder="Tạo Tên định danh (ID)">
+                <input type="password" id="regPass" placeholder="Tạo Mã bảo mật">
+                <button onclick="register()">KHỞI TẠO BẢN THỂ</button>
+                <p class="switch-auth" onclick="showLogin()">Đã có dữ liệu? Kết nối ngay</p>
+            </div>
+            
+            <p id="authMsg" style="color:var(--neon-red); text-align:center; margin-top:15px;"></p>
+        </div>
+    </div>
+
+    <div id="mainApp" style="display: none;">
+        <header>
+            <h1>ETHOS<span style="color:var(--neon-blue)">MIRROR</span> <span style="font-size:1rem; color:#888;">v3.1</span></h1>
+            <div class="rank-display" id="userRank">LV.1 | THỰC TẬP SINH</div>
+            <div class="user-info">
+                <span id="welcomeUser" style="color:var(--neon-purple); font-weight:bold;"></span>
+                <button id="soundBtn" onclick="toggleSound()">🔇 SOUND: OFF</button>
+                <button onclick="logout()" style="border-color:var(--neon-red); color:var(--neon-red)">NGẮT KẾT NỐI</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="panel">
+                <h2 class="panel-title">HỒ SƠ SINH TRẮC</h2>
+                <div class="chart-container">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+
+                <h2 style="margin-top: 20px; font-size: 1rem; color: var(--neon-yellow);">KHO THÀNH TỰU (BADGES)</h2>
+                <div class="badge-grid">
+                    <div class="badge" id="badge-disc" title="Kỷ luật đạt 80%"><span class="badge-icon">🛡️</span><br>CHIẾN BINH THÉP</div>
+                    <div class="badge" id="badge-create" title="Sáng tạo đạt 80%"><span class="badge-icon">🎨</span><br>NGHỆ SĨ ĐỘC BẢN</div>
+                    <div class="badge" id="badge-logic" title="Trí tuệ đạt 80%"><span class="badge-icon">🧠</span><br>NÃO ĐIỆN TOÁN</div>
+                    <div class="badge" id="badge-psych" title="Tâm lý đạt 80%"><span class="badge-icon">🧘</span><br>THIỀN SƯ SỐ</div>
+                    <div class="badge" id="badge-bio" title="Thể chất đạt 80%"><span class="badge-icon">⚡</span><br>LÕI NĂNG LƯỢNG</div>
+                    <div class="badge" id="badge-master" title="Tất cả chỉ số đạt 80%"><span class="badge-icon">👑</span><br>BẢN THỂ HOÀN MỸ</div>
+                </div>
+
+                <div style="display:none;">
+                    <span id="val-psych">1</span> <span id="val-create">1</span>
+                    <span id="val-bio">1</span> <span id="val-disc">1</span> <span id="val-logic">1</span>
+                </div>
+            </div>
+
+            <div class="panel center-panel">
+                <h2 class="panel-title">TRẠM KIẾN TẠO</h2>
+                <textarea id="userInput" placeholder="Hôm nay bạn cảm thấy thế nào? Hãy thử nhập: 'Hôm nay tôi vừa học code xong...' hoặc 'Tôi cảm thấy hơi mệt mỏi và áp lực...'"></textarea>
+                <div style="text-align: right; font-size: 0.75rem; color: #555; margin-top: 5px; margin-bottom: 15px; font-family: 'Rajdhani', sans-serif;">
+                    🔒 Dữ liệu được mã hóa và lưu trữ cục bộ (Local Storage). EthosMirror tôn trọng quyền riêng tư tuyệt đối của bạn.
+                </div>
+                <button class="btn-activate" onmouseenter="playHover()" onclick="runEngine()">⚡ KÍCH HOẠT MÔ PHỎNG</button>
+                <button class="btn-memory" onmouseenter="playHover()" onclick="openMemory()">📜 TRUY XUẤT LÕI KÝ ỨC</button>
+            </div>
+
+            <div class="panel">
+                <h2 class="panel-title">BÁO CÁO TƯƠNG LAI</h2>
+                <div class="console-output" id="consoleOutput">
+                    > Đang chờ kết nối thần kinh...<br>
+                    > Hãy nhập dữ liệu ngày hôm nay của bạn để hệ thống tiến hành phân tích và phản hồi.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="criticalWarning" style="display: none;">
+        <div class="warning-box">
+            <div class="warning-icon">⚠️</div>
+            <h2 class="warning-title">CẢNH BÁO SINH TỒN</h2>
+            <div class="warning-message" id="warningText"></div>
+            <button class="warning-btn" onclick="closeWarning()">XÁC NHẬN RỦI RO</button>
+        </div>
+    </div>
+
+    <div id="victoryPopup" style="display: none;">
+        <div class="victory-box">
+            <div class="victory-icon">👑</div>
+            <h2 class="victory-title">THE SINGULARITY REACHED</h2>
+            <div class="victory-message">
+                <p style="font-size: 1.15rem; margin-bottom: 15px; line-height: 1.6;">
+                    Bạn đã làm được! Cảnh giới <strong style="color: var(--neon-yellow);">Bản Thể Hoàn Mỹ (100%)</strong> không phải là một phép màu ngẫu nhiên. Đó là kết quả của vô số ngày tháng bạn kiên trì kỷ luật, vượt qua những lúc kiệt sức và không ngừng nuôi dưỡng tâm hồn mình.
+                </p>
+                <p style="font-size: 1.15rem; margin-bottom: 20px; line-height: 1.6;">
+                    Nhưng hãy nhớ, EthosMirror chỉ là tấm gương phản chiếu. Sức mạnh vĩ đại nhất giờ đây không nằm trên những dòng code này, mà đang cuộn chảy trong chính con người thật của bạn ở ngoài kia.
+                </p>
+                <div style="background: rgba(0, 243, 255, 0.1); padding: 15px; border-left: 4px solid var(--neon-blue); border-radius: 5px; font-style: italic;">
+                    <strong style="color: var(--neon-blue); font-size: 1.2rem;">💌 Lời nhắn từ Tương Lai:</strong><br><br>
+                    <span style="color: #e0e0e0; font-size: 1.1rem; line-height: 1.6;">
+                        "Đỉnh cao ngày hôm nay không phải là đích đến cuối cùng, mà là bệ phóng cho một chương mới của cuộc đời. Hãy mang theo chiếc đầu lạnh (Trí tuệ), trái tim ấm (Tâm lý), và tinh thần thép (Kỷ luật) này bước ra ngoài thế giới thực. Không một rào cản nào có thể ngăn cản bước chân của người đã chiến thắng được chính bản thân mình.<br><br>
+                        Tương lai của cậu đang rực sáng. Hãy sống một cuộc đời thật vĩ đại và hạnh phúc nhé!"
+                    </span>
+                </div>
+            </div>
+            <button class="victory-btn" onclick="closeVictory()">TIẾP TỤC DUY TRÌ SỰ VĨ ĐẠI</button>
+        </div>
+    </div>
+
+    <div id="memoryPopup" style="display: none;">
+        <div class="memory-box">
+            <div class="memory-header">
+                <h2 class="memory-title">LÕI KÝ ỨC LƯỢNG TỬ</h2>
+                <button class="close-memory-btn" onclick="closeMemory()">✖ ĐÓNG</button>
+            </div>
+            <div class="memory-list" id="memoryList">
+                </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
